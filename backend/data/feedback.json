@@ -1,0 +1,184 @@
+[
+  {
+    "id": 1,
+    "timestamp": "2025-10-30T11:11:50.067955",
+    "question": "Evaluate the integral of x² ln(x) from 0 to 1",
+    "answer": "∫₀¹ x²ln(x)dx = (x³/3)ln(x) - x³/9 |₀¹ = -1/9",
+    "rating": "thumbs_up",
+    "feedback_type": "problem_report",
+    "correction": null,
+    "comment": "Excellent step-by-step solution with clear explanation!",
+    "metadata": {
+      "source": "gemini_with_db",
+      "confidence": "high",
+      "confidence_score": 0.95,
+      "problem_id": "calc_001",
+      "status": "resolved",
+      "problem_type": "calculus"
+    }
+  },
+  {
+    "id": 2,
+    "timestamp": "2025-10-30T11:11:52.108033",
+    "question": "Solve x³ - 3x + 2 = 0",
+    "answer": "x = 1 (single root)",
+    "rating": "thumbs_down",
+    "feedback_type": "problem_report",
+    "correction": "x = 1 is correct, but also x = -2 (double root from factoring (x-1)(x+1)²=0)",
+    "comment": "Missing one of the roots. Should show all solutions.",
+    "metadata": {
+      "source": "perplexity_web",
+      "confidence": "medium",
+      "status": "pending",
+      "problem_type": "algebra"
+    }
+  },
+  {
+    "id": 3,
+    "timestamp": "2025-10-30T11:11:54.151089",
+    "question": "What is the Cauchy-Schwarz inequality?",
+    "answer": "I couldn't find information about this in my knowledge base.",
+    "rating": "thumbs_down",
+    "feedback_type": "problem_report",
+    "correction": null,
+    "comment": "This is a fundamental theorem that should be in the knowledge base",
+    "metadata": {
+      "source": "not_found",
+      "confidence": "none",
+      "status": "pending",
+      "problem_type": "other"
+    }
+  },
+  {
+    "id": 4,
+    "timestamp": "2025-10-30T11:11:56.187126",
+    "question": "Find the derivative of sin(x)cos(x)",
+    "answer": "d/dx[sin(x)cos(x)] = cos²(x) - sin²(x) = cos(2x)",
+    "rating": "thumbs_up",
+    "feedback_type": "comment",
+    "correction": null,
+    "comment": "Perfect! Used product rule correctly.",
+    "metadata": {}
+  },
+  {
+    "id": 5,
+    "timestamp": "2025-10-30T11:11:58.215858",
+    "question": "What is the probability of getting exactly 2 red balls?",
+    "answer": "P(X=2) = C(5,2) × (0.4)² × (0.6)³ = 0.3456",
+    "rating": "thumbs_up",
+    "feedback_type": "comment",
+    "correction": null,
+    "comment": "Clear binomial probability calculation.",
+    "metadata": {}
+  },
+  {
+    "id": 6,
+    "timestamp": "2025-10-30T11:12:00.249556",
+    "question": "Solve the quadratic equation x² + 5x + 6 = 0",
+    "answer": "x = -2 or x = -3 (by factoring: (x+2)(x+3)=0)",
+    "rating": "thumbs_up",
+    "feedback_type": "rating",
+    "correction": null,
+    "comment": null,
+    "metadata": {}
+  },
+  {
+    "id": 7,
+    "timestamp": "2025-10-30T15:52:33.607285",
+    "question": "Evaluate the integral of x² ln(x) from 0 to 1",
+    "answer": "∫₀¹ x²ln(x)dx = (x³/3)ln(x) - x³/9 |₀¹ = -1/9",
+    "rating": "thumbs_up",
+    "feedback_type": "problem_report",
+    "correction": null,
+    "comment": "Excellent step-by-step solution with clear explanation!",
+    "metadata": {
+      "source": "gemini_with_db",
+      "confidence": "high",
+      "confidence_score": 0.95,
+      "problem_id": "calc_001",
+      "status": "resolved",
+      "problem_type": "calculus"
+    }
+  },
+  {
+    "id": 8,
+    "timestamp": "2025-10-30T15:52:35.665827",
+    "question": "Solve x³ - 3x + 2 = 0",
+    "answer": "x = 1 (single root)",
+    "rating": "thumbs_down",
+    "feedback_type": "problem_report",
+    "correction": "x = 1 is correct, but also x = -2 (double root from factoring (x-1)(x+1)²=0)",
+    "comment": "Missing one of the roots. Should show all solutions.",
+    "metadata": {
+      "source": "perplexity_web",
+      "confidence": "medium",
+      "status": "pending",
+      "problem_type": "algebra"
+    }
+  },
+  {
+    "id": 9,
+    "timestamp": "2025-10-30T15:52:37.704343",
+    "question": "What is the Cauchy-Schwarz inequality?",
+    "answer": "I couldn't find information about this in my knowledge base.",
+    "rating": "thumbs_down",
+    "feedback_type": "problem_report",
+    "correction": null,
+    "comment": "This is a fundamental theorem that should be in the knowledge base",
+    "metadata": {
+      "source": "not_found",
+      "confidence": "none",
+      "status": "pending",
+      "problem_type": "other"
+    }
+  },
+  {
+    "id": 10,
+    "timestamp": "2025-10-30T15:52:39.802667",
+    "question": "Find the derivative of sin(x)cos(x)",
+    "answer": "d/dx[sin(x)cos(x)] = cos²(x) - sin²(x) = cos(2x)",
+    "rating": "thumbs_up",
+    "feedback_type": "comment",
+    "correction": null,
+    "comment": "Perfect! Used product rule correctly.",
+    "metadata": {}
+  },
+  {
+    "id": 11,
+    "timestamp": "2025-10-30T15:52:41.848200",
+    "question": "What is the probability of getting exactly 2 red balls?",
+    "answer": "P(X=2) = C(5,2) × (0.4)² × (0.6)³ = 0.3456",
+    "rating": "thumbs_up",
+    "feedback_type": "comment",
+    "correction": null,
+    "comment": "Clear binomial probability calculation.",
+    "metadata": {}
+  },
+  {
+    "id": 12,
+    "timestamp": "2025-10-30T15:52:43.931484",
+    "question": "Solve the quadratic equation x² + 5x + 6 = 0",
+    "answer": "x = -2 or x = -3 (by factoring: (x+2)(x+3)=0)",
+    "rating": "thumbs_up",
+    "feedback_type": "rating",
+    "correction": null,
+    "comment": null,
+    "metadata": {}
+  },
+  {
+    "id": 13,
+    "timestamp": "2025-10-31T00:38:12.398576",
+    "question": "[USER PROBLEM REPORT - IMPROVEMENT]",
+    "answer": "SOME BACKGROUND",
+    "rating": "thumbs_down",
+    "feedback_type": "comment",
+    "correction": "",
+    "comment": "Type: improvement\nEmail: Not provided\n\nDescription: SOME BACKGROUND",
+    "metadata": {
+      "source": "user_problem_report",
+      "problem_type": "improvement",
+      "user_email": "",
+      "timestamp": "2025-10-30T19:08:12.394Z"
+    }
+  }
+]

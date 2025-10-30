@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+requests
+qdrant-client
+sentence-transformers
+langgraph
+langchain
+langchain-core
+dspy-ai
+mcp
