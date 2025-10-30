@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import Tesseract from 'tesseract.js';
 import './App.css';
 
+// API URL from environment variable or fallback to localhost
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
 function App() {
   const [question, setQuestion] = useState('');
   const [difficulty, setDifficulty] = useState('JEE_Main');
@@ -44,7 +47,7 @@ function App() {
     setResponse(null);
 
     try {
-      const res = await fetch('http://localhost:8000/query', {
+      const res = await fetch(`${API_URL}/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +86,7 @@ function App() {
     setLoginLoading(true);
     setLoginError(null);
     try {
-      const res = await fetch('http://localhost:8000/login', {
+      const res = await fetch(`${API_URL}/login`, {
         method: 'POST',
       });
       if (!res.ok) {
@@ -120,7 +123,7 @@ function App() {
         }
       };
 
-      const res = await fetch('http://localhost:8000/feedback/submit', {
+      const res = await fetch(`${API_URL}/feedback/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -294,7 +297,7 @@ function App() {
     }
 
     try {
-      const res = await fetch('http://localhost:8000/feedback/submit', {
+      const res = await fetch(`${API_URL}/feedback/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -499,7 +502,7 @@ function App() {
         {error && (
           <div className="error-message">
             <strong>Error:</strong> {error}
-            <p>Make sure the backend server is running on http://localhost:8000</p>
+            <p>Make sure the backend server is running on {API_URL}</p>
           </div>
         )}
 
@@ -776,7 +779,7 @@ function App() {
 
                 <div className="status-link">
                   <a 
-                    href="http://localhost:8000/static/problem_status.html" 
+                    href={`${API_URL}/static/problem_status.html`}
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="view-status-link"
@@ -794,7 +797,7 @@ function App() {
                 
                 <div className="status-link" style={{marginTop: '20px'}}>
                   <a 
-                    href="http://localhost:8000/../problem_status.html" 
+                    href={`${API_URL}/../problem_status.html`}
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="view-status-link"
