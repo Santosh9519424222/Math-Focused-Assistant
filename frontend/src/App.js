@@ -47,13 +47,20 @@ function App() {
     setResponse(null);
 
     try {
+      // Create abort controller with 120 second timeout for first request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 seconds
+      
       const res = await fetch(`${API_URL}/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ question, difficulty }),
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       if (res.status === 401) {
         // Login required
@@ -74,7 +81,11 @@ function App() {
       setFeedbackCorrection('');
       setShowFeedbackForm(false);
     } catch (err) {
-      setError(err.message);
+      if (err.name === 'AbortError') {
+        setError('Request timeout. The server is taking too long to respond. This usually happens on the first request while loading AI models. Please try again.');
+      } else {
+        setError(err.message || 'An error occurred while processing your request.');
+      }
       console.error('Error:', err);
     } finally {
       setLoading(false);
