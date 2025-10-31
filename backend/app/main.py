@@ -178,10 +178,21 @@ def query_perplexity_api(question: str) -> str:
 
 @app.on_event("startup")
 async def startup_event():
-    """Populate knowledge base and initialize LangGraph workflow on server startup"""
+    """Initialize app - delayed heavy initialization for Render deployment"""
     global workflow
     
-    logger.info("Populating knowledge base on startup...")
+    logger.info("🚀 FastAPI server starting...")
+    logger.info("⚠️  Heavy initialization (KB & LangGraph) will happen on first request")
+    logger.info("✅ Server is ready to accept connections")
+
+async def lazy_init():
+    """Lazy initialization of KB and workflow - called on first request"""
+    global workflow
+    
+    if workflow is not None:
+        return  # Already initialized
+    
+    logger.info("🔄 Starting lazy initialization of knowledge base and workflow...")
     
     # Sample problems for testing
     sample_problems = [
@@ -288,12 +299,14 @@ async def startup_event():
     logger.info("Initializing LangGraph workflow...")
     workflow = MathRAGWorkflow(kb, query_gemini_api, query_perplexity_api)
     logger.info("✅ LangGraph workflow ready!")
+    logger.info("✅ Lazy initialization complete!")
 
 @app.get("/")
-def read_root():
+async def read_root():
+    """Health check endpoint"""
     return {
         "message": "Welcome to the Agentic RAG Math Agent Backend!",
-        "kb_count": kb.count_problems(),
+        "status": "online",
         "version": "1.0.0",
         "langgraph": "enabled"
     }
@@ -386,12 +399,17 @@ async def query_rag_pipeline(query: Query, request: Request) -> Dict:
     save_user_sessions()
     
     # ============================================
+    # STEP 1.5: LAZY INITIALIZATION
+    # ============================================
+    await lazy_init()  # Initialize KB and workflow on first request
+    
+    # ============================================
     # STEP 2: LANGGRAPH WORKFLOW
     # ============================================
     if workflow is None:
         return {
             "error": "Workflow not initialized",
-            "answer": "System is still starting up",
+            "answer": "System is still initializing, please try again in a few seconds",
             "confidence": "none",
             "confidence_score": 0.0,
             "source": "error"
