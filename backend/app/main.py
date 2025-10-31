@@ -9,8 +9,10 @@ import os
 import logging
 import requests
 from typing import Optional, List, Dict
-from app.vector_db import MathKnowledgeBase
-from app.langgraph_workflow import MathRAGWorkflow
+
+# Delay heavy imports until needed
+# from app.vector_db import MathKnowledgeBase
+# from app.langgraph_workflow import MathRAGWorkflow
 from app.guardrails import AIGateway, ValidationResult
 from app.feedback import get_hitl_system
 
@@ -193,6 +195,10 @@ async def lazy_init():
         return  # Already initialized
     
     logger.info("🔄 Starting lazy initialization of knowledge base and workflow...")
+    
+    # Import heavy modules only when needed
+    from app.vector_db import MathKnowledgeBase
+    from app.langgraph_workflow import MathRAGWorkflow
     
     # Initialize knowledge base first
     if kb is None:
