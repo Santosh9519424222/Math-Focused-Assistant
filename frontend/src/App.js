@@ -4,8 +4,11 @@ import React, { useState } from 'react';
 import Tesseract from 'tesseract.js';
 import './App.css';
 
-// API URL from environment variable or fallback to localhost
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+// API URL from environment variable or fallback to production
+// Check if process.env exists (build time) or use window location (runtime)
+const API_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) 
+  ? process.env.REACT_APP_API_URL 
+  : 'https://math-focused-assistant.onrender.com';
 
 function App() {
   const [question, setQuestion] = useState('');
