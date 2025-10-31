@@ -57,8 +57,8 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 def get_admin_sessions():
     return user_sessions
 
-# Initialize components
-kb = MathKnowledgeBase()
+# Initialize components - delay heavy initialization
+kb = None  # Will be initialized on first request
 workflow = None  # LangGraph workflow will be initialized after startup
 ai_gateway = AIGateway()
 hitl_system = get_hitl_system()
@@ -187,12 +187,17 @@ async def startup_event():
 
 async def lazy_init():
     """Lazy initialization of KB and workflow - called on first request"""
-    global workflow
+    global workflow, kb
     
-    if workflow is not None:
+    if workflow is not None and kb is not None:
         return  # Already initialized
     
     logger.info("🔄 Starting lazy initialization of knowledge base and workflow...")
+    
+    # Initialize knowledge base first
+    if kb is None:
+        logger.info("Initializing MathKnowledgeBase...")
+        kb = MathKnowledgeBase()
     
     # Sample problems for testing
     sample_problems = [
@@ -304,11 +309,14 @@ async def lazy_init():
 @app.get("/")
 async def read_root():
     """Health check endpoint"""
+    kb_count = kb.count_problems() if kb else 0
     return {
         "message": "Welcome to the Agentic RAG Math Agent Backend!",
         "status": "online",
         "version": "1.0.0",
-        "langgraph": "enabled"
+        "langgraph": "enabled",
+        "kb_initialized": kb is not None,
+        "kb_count": kb_count
     }
 
 @app.get("/kb/status")
