@@ -1,6 +1,6 @@
 """
 LangGraph Workflow for Agentic RAG Math Agent
-Orchestrates the decision flow: DB Search → Gemini Analysis → Web Search → Not Found
+Orchestrates the decision flow: DB Search → Perplexity Analysis → Web Search → Not Found
 """
 
 from typing import TypedDict, Annotated, Literal
@@ -18,7 +18,6 @@ class RAGState(TypedDict):
     confidence: str
     confidence_score: float
     best_match: dict
-    gemini_response: str
     perplexity_response: str
     final_answer: str
     source: str
@@ -29,17 +28,15 @@ class RAGState(TypedDict):
 class MathRAGWorkflow:
     """LangGraph workflow for math problem solving"""
     
-    def __init__(self, kb, gemini_fn, perplexity_fn):
+    def __init__(self, kb, perplexity_fn):
         """
         Initialize workflow with dependencies
         
         Args:
             kb: Knowledge base instance
-            gemini_fn: Function to call Gemini API
             perplexity_fn: Function to call Perplexity API
         """
         self.kb = kb
-        self.gemini_fn = gemini_fn
         self.perplexity_fn = perplexity_fn
         self.graph = self._build_graph()
     
@@ -49,8 +46,7 @@ class MathRAGWorkflow:
         
         # Add nodes (steps in the workflow)
         workflow.add_node("search_database", self.search_database)
-        workflow.add_node("gemini_analyze", self.gemini_analyze)
-        workflow.add_node("web_search", self.web_search)
+        workflow.add_node("perplexity_analyze", self.perplexity_analyze)
         workflow.add_node("not_found", self.not_found)
         
         # Define entry point
@@ -61,21 +57,17 @@ class MathRAGWorkflow:
             "search_database",
             self.route_after_db_search,
             {
-                "gemini_analyze": "gemini_analyze",  # Found in DB
-                "web_search": "web_search"            # Not in DB
+                "perplexity_analyze": "perplexity_analyze",  # Always go to Perplexity
             }
         )
         
-        # Gemini analysis leads to end
-        workflow.add_edge("gemini_analyze", END)
-        
-        # Web search has conditional routing
+        # Perplexity analysis has conditional routing
         workflow.add_conditional_edges(
-            "web_search",
-            self.route_after_web_search,
+            "perplexity_analyze",
+            self.route_after_perplexity,
             {
-                "success": END,      # Found on web
-                "not_found": "not_found"  # Not found anywhere
+                "success": END,      # Perplexity succeeded
+                "not_found": "not_found"  # Perplexity failed
             }
         )
         
@@ -117,111 +109,123 @@ class MathRAGWorkflow:
         
         return state
     
-    def route_after_db_search(self, state: RAGState) -> Literal["gemini_analyze", "web_search"]:
+    def route_after_db_search(self, state: RAGState) -> Literal["perplexity_analyze"]:
         """
-        Decision: Route based on DB search results
+        Decision: Always route to Perplexity (with or without DB context)
         """
         if state['kb_results'] and state['confidence_score'] >= 0.5:
-            logger.info(f"🎯 [Decision] DB match found ({state['confidence_score']:.2%}) → Gemini Analysis")
-            return "gemini_analyze"
+            logger.info(f"🎯 [Decision] DB match found ({state['confidence_score']:.2%}) → Perplexity will analyze with DB context")
         else:
-            logger.info(f"⚠️ [Decision] No DB match → Web Search")
-            return "web_search"
+            logger.info(f"⚠️ [Decision] No DB match → Perplexity will search web")
+        return "perplexity_analyze"
     
-    def gemini_analyze(self, state: RAGState) -> RAGState:
+    def perplexity_analyze(self, state: RAGState) -> RAGState:
         """
-        Node 2: Gemini analyzes database match and creates answer
+        Node 2: Perplexity analyzes the question
+        - If DB match exists: Perplexity analyzes with DB context
+        - If no DB match: Perplexity does web search
         """
-        logger.info(f"🤖 [Node 2: Gemini Analyze] Analyzing DB match: {state['best_match'].get('problem_id')}")
-        
-        try:
-            # Build context from database
-            best_match = state['best_match']
-            context = f"""
-DATABASE MATCH FOUND (Similarity: {state['confidence_score']:.1%}):
+        if state['kb_results'] and state['confidence_score'] >= 0.5:
+            # Case 1: Database match - ask Perplexity to analyze with context
+            logger.info(f"🤖 [Node 2: Perplexity Analyze] Analyzing with DB context: {state['best_match'].get('problem_id')}")
+            
+            try:
+                best_match = state['best_match']
+                
+                # Build enriched prompt with database context
+                enriched_question = f"""I found this similar problem in my database:
 
-Problem ID: {best_match.get('problem_id')}
+**Database Problem:**
 Question: {best_match.get('question')}
 Topic: {best_match.get('topic')}
 Difficulty: {best_match.get('difficulty')}
 
-Solution Steps from Database:
+**Solution from Database:**
 {chr(10).join(f"{i+1}. {step}" for i, step in enumerate(best_match.get('solution_steps', [])))}
 
-Final Answer: {best_match.get('final_answer')}
+**Final Answer:** {best_match.get('final_answer')}
 
-Tags: {', '.join(best_match.get('tags', []))}
-"""
-            
-            # Call Gemini
-            gemini_response = self.gemini_fn(state['question'], context)
-            
-            state['gemini_response'] = gemini_response
-            state['final_answer'] = gemini_response
-            state['source'] = 'gemini_with_db'
-            state['note'] = f"Answer analyzed and generated by Gemini based on database match (Problem: {best_match.get('problem_id')})"
-            
-            logger.info(f"✅ Gemini analysis complete")
-            
-        except Exception as e:
-            logger.error(f"Error in Gemini analysis: {e}")
-            state['error'] = str(e)
-            state['final_answer'] = f"Error: {str(e)}"
+**User's Question:** {state['question']}
+
+Please analyze if this database solution applies to the user's question. If it's the same problem, explain the solution step-by-step. If it's different, solve the user's question step-by-step."""
+                
+                # Call Perplexity with DB context
+                perplexity_response = self.perplexity_fn(enriched_question)
+                
+                state['perplexity_response'] = perplexity_response
+                state['final_answer'] = perplexity_response
+                state['source'] = 'perplexity_with_db'
+                state['note'] = f"Answer generated by Perplexity AI based on database match (Problem: {best_match.get('problem_id')}, Confidence: {state['confidence_score']:.1%})"
+                
+                logger.info(f"✅ Perplexity analysis with DB context complete")
+                
+            except Exception as e:
+                logger.error(f"Error in Perplexity analysis: {e}")
+                state['error'] = str(e)
+                state['final_answer'] = f"Error: {str(e)}"
         
-        return state
-    
-    def web_search(self, state: RAGState) -> RAGState:
-        """
-        Node 3: Search the web using Perplexity
-        """
-        logger.info(f"🌐 [Node 3: Web Search] Searching web for: {state['question']}")
-        
-        try:
-            # Call Perplexity
-            perplexity_response = self.perplexity_fn(state['question'])
+        else:
+            # Case 2: No database match - Perplexity web search
+            logger.info(f"🌐 [Node 2: Perplexity Web Search] Searching web for: {state['question']}")
             
-            state['perplexity_response'] = perplexity_response
-            
-            # Check if we got a valid response
-            if perplexity_response and not any(err in perplexity_response.lower() 
-                                               for err in ['failed', 'error', 'missing']):
+            try:
+                # Call Perplexity for web search
+                perplexity_response = self.perplexity_fn(state['question'])
+                
+                state['perplexity_response'] = perplexity_response
                 state['final_answer'] = perplexity_response
                 state['source'] = 'perplexity_web'
                 state['note'] = "Answer found via Perplexity web search (not in database)"
-                logger.info(f"✅ Web search successful")
-            else:
-                state['final_answer'] = ""
-                logger.info(f"❌ Web search failed or no results")
-            
-        except Exception as e:
-            logger.error(f"Error in web search: {e}")
-            state['error'] = str(e)
-            state['final_answer'] = ""
+                
+                logger.info(f"✅ Perplexity web search complete")
+                
+            except Exception as e:
+                logger.error(f"Error in Perplexity web search: {e}")
+                state['error'] = str(e)
+                state['final_answer'] = None
         
         return state
     
-    def route_after_web_search(self, state: RAGState) -> Literal["success", "not_found"]:
+    def route_after_perplexity(self, state: RAGState) -> Literal["success", "not_found"]:
         """
-        Decision: Route based on web search results
+        Decision: Route based on Perplexity results
         """
-        if state['final_answer'] and state['source'] == 'perplexity_web':
-            logger.info(f"✅ [Decision] Web search successful → End")
+        if state['final_answer'] and not state.get('error'):
+            logger.info(f"✅ [Decision] Perplexity successful → End")
             return "success"
         else:
-            logger.info(f"❌ [Decision] Web search failed → Not Found")
+            logger.info(f"❌ [Decision] Perplexity failed → Not Found")
             return "not_found"
     
     def not_found(self, state: RAGState) -> RAGState:
         """
-        Node 4: Handle case when nothing is found
+        Node 3: Handle case when Perplexity fails
         """
-        logger.info(f"❌ [Node 4: Not Found] No answer found anywhere")
+        logger.info(f"❌ [Node 3: Not Found] No answer available")
         
-        state['final_answer'] = "❌ NOT FOUND - This question could not be answered. The problem is not in our database and was not found on the web."
+        state['final_answer'] = """❌ **ANSWER NOT AVAILABLE**
+
+This question could not be answered because:
+- **Not in our database**: No similar problems found in the knowledge base
+- **Web search unavailable**: Perplexity API could not retrieve information
+
+**Recommendations:**
+1. Try rephrasing your question
+2. Check if it's a valid mathematics problem
+3. Verify API connectivity
+
+**Topics in our database:**
+- Calculus (derivatives, integrals, limits)
+- Algebra (equations, polynomials, factorization)
+- Probability (statistics, distributions)
+- Trigonometry (identities, equations)
+
+*If this is a math problem in these topics, please try asking in a different way.*"""
+        
         state['confidence'] = 'none'
         state['confidence_score'] = 0.0
         state['source'] = 'not_found'
-        state['note'] = "No match in database and no results from web search"
+        state['note'] = "Not in database and Perplexity API unavailable"
         
         return state
     

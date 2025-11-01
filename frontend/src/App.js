@@ -50,9 +50,9 @@ function App() {
     setResponse(null);
 
     try {
-      // Create abort controller with 120 second timeout for first request
+      // Create abort controller with 300 second timeout for first request (free tier is slow)
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 seconds
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 300 seconds (5 minutes)
       
       const res = await fetch(`${API_URL}/query`, {
         method: 'POST',
