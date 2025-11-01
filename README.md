@@ -1,18 +1,20 @@
 # Agentic RAG Math Agent
 
-An intelligent math problem-solving system with **Agentic RAG architecture**, **LangGraph workflow orchestration**, and **Model Context Protocol (MCP) server** integration.
+An intelligent math problem-solving system with **Agentic RAG architecture**, **LangGraph workflow orchestration**, powered by **Perplexity AI** with integrated web search capabilities.
+
+**🆕 Version 2.0:** Simplified architecture using Perplexity as the sole LLM provider - [See Architecture Details](./PERPLEXITY_ARCHITECTURE.md)
 
 ## 🎯 Features
 
 - ✅ **Agentic RAG Architecture** with LangGraph state machine
 - ✅ **Vector Knowledge Base** (Qdrant + sentence-transformers)
 - ✅ **Semantic Search** for similar problem matching
-- ✅ **AI-Powered Solutions** (Gemini API)
-- ✅ **Web Search Fallback** (Perplexity API)
-- ✅ **MCP Server** for AI agent integration ⭐ NEW!
+- ✅ **AI-Powered Solutions** (Perplexity Sonar with web search)
+- ✅ **Database Context Integration** (Perplexity analyzes DB matches)
 - ✅ **OCR Support** (upload images or paste screenshots)
 - ✅ **Math Keyboard** (70+ symbols in 9 categories)
 - ✅ **Modern React UI** with confidence badges
+- ✅ **HITL Feedback System** with DSPy optimization
 
 ## 📋 Architecture
 
@@ -25,22 +27,34 @@ User Question
 │  │   LangGraph Workflow (Agentic)   │  │
 │  │  ┌──────────────────────────┐    │  │
 │  │  │ 1. Search Database       │    │  │
+│  │  │    (Vector Similarity)   │    │  │
 │  │  └──────────┬───────────────┘    │  │
 │  │             ↓                     │  │
-│  │    Found? ──┬── Yes → Gemini     │  │
-│  │             │                     │  │
-│  │             └── No → Web Search   │  │
-│  │                      ↓            │  │
-│  │             Found? ──┬── Yes     │  │
-│  │                      │            │  │
-│  │                      └── No       │  │
-│  │                           ↓       │  │
-│  │                      Not Found    │  │
+│  │  ┌──────────────────────────┐    │  │
+│  │  │ 2. Perplexity Analysis   │    │  │
+│  │  │                          │    │  │
+│  │  │  WITH DB Context:        │    │  │
+│  │  │  - Use DB solution       │    │  │
+│  │  │  - Explain step-by-step  │    │  │
+│  │  │                          │    │  │
+│  │  │  WITHOUT Context:        │    │  │
+│  │  │  - Web search            │    │  │
+│  │  │  - Generate solution     │    │  │
+│  │  └──────────┬───────────────┘    │  │
+│  │             ↓                     │  │
+│  │    Success? ──┬── Yes → Return   │  │
+│  │               └── No → Not Found │  │
 │  └──────────────────────────────────┘  │
 └────────────────────────────────────────┘
      ↓
 React Frontend (Port 3000)
 ```
+
+**Key Advantages:**
+- 🔥 Single LLM provider (simplified maintenance)
+- 🌐 Integrated web search (no separate API calls)
+- 📚 Database context enrichment (better accuracy)
+- 🔗 Citations included (Perplexity sources)
 
 ## 🚀 Quick Start
 
@@ -63,9 +77,10 @@ React Frontend (Port 3000)
 
 4. Set up environment variables (`.env` file):
    ```
-   GEMINI_API_KEY=your_gemini_key
    PERPLEXITY_API_KEY=your_perplexity_key
    ```
+   
+   **Get your API key:** https://www.perplexity.ai/settings/api
 
 5. Start the FastAPI server:
    ```bash
@@ -90,15 +105,6 @@ React Frontend (Port 3000)
    npm start
    ```
    App runs on: http://localhost:3000
-
-### MCP Server (Optional)
-To connect with Claude Desktop or other MCP clients:
-
-1. Run the MCP server:
-   ```bash
-   cd backend
-   python mcp_server.py
-   ```
 
 2. Configure Claude Desktop (see `backend/MCP_README.md` for details)
 
