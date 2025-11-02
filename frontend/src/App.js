@@ -85,9 +85,9 @@ function App() {
     console.log('📊 Difficulty:', difficulty);
 
     try {
-      // Create abort controller with 60 second timeout
+      // Create abort controller with 180 second timeout (Render free tier is slow)
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 seconds
+      const timeoutId = setTimeout(() => controller.abort(), 180000); // 180 seconds (3 minutes)
       
       const requestUrl = `${API_URL}/query`;
       console.log('🌐 Full URL:', requestUrl);
