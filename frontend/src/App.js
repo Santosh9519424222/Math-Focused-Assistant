@@ -4,11 +4,42 @@ import React, { useState } from 'react';
 import Tesseract from 'tesseract.js';
 import './App.css';
 
-// API URL from environment variable or fallback to production
-// Check if process.env exists (build time) or use window location (runtime)
-const API_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) 
-  ? process.env.REACT_APP_API_URL 
-  : 'https://math-focused-assistant.onrender.com';
+// API URL configuration - detect environment at runtime
+const getApiUrl = () => {
+  const hostname = window.location.hostname;
+  const origin = window.location.origin;
+  
+  console.log('🔍 Detecting API URL...');
+  console.log('  Browser origin:', origin);
+  console.log('  Browser hostname:', hostname);
+  
+  // 1. Check environment variable first
+  if (process.env.REACT_APP_API_URL) {
+    console.log('  ✅ Using ENV variable:', process.env.REACT_APP_API_URL);
+    return process.env.REACT_APP_API_URL;
+  }
+  
+  // 2. Auto-detect GitHub Codespaces
+  if (hostname.includes('github.dev') || hostname.includes('githubpreview.dev') || hostname.includes('app.github.dev')) {
+    // Replace port in origin: -3000 becomes -8000
+    const backendUrl = origin.replace('-3000', '-8000');
+    console.log('  🎯 DETECTED GITHUB CODESPACES!');
+    console.log('  🎯 Using backend URL:', backendUrl);
+    return backendUrl;
+  }
+  
+  // 3. Check if running on localhost
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    console.log('  ✅ Using localhost:8000');
+    return 'http://localhost:8000';
+  }
+  
+  // 4. Fallback to production
+  console.log('  ✅ Using production');
+  return 'https://math-focused-assistant.onrender.com';
+};
+
+const API_URL = getApiUrl();
 
 function App() {
   const [question, setQuestion] = useState('');
@@ -49,12 +80,19 @@ function App() {
     setError(null);
     setResponse(null);
 
+    console.log('🚀 Sending request to:', `${API_URL}/query`);
+    console.log('📝 Question:', question);
+    console.log('📊 Difficulty:', difficulty);
+
     try {
-      // Create abort controller with 300 second timeout for first request (free tier is slow)
+      // Create abort controller with 60 second timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 300000); // 300 seconds (5 minutes)
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 seconds
       
-      const res = await fetch(`${API_URL}/query`, {
+      const requestUrl = `${API_URL}/query`;
+      console.log('🌐 Full URL:', requestUrl);
+      
+      const res = await fetch(requestUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,6 +102,8 @@ function App() {
       });
       
       clearTimeout(timeoutId);
+      
+      console.log('✅ Response status:', res.status);
 
       if (res.status === 401) {
         // Login required
@@ -77,6 +117,7 @@ function App() {
       }
 
       const data = await res.json();
+      console.log('📦 Response data received:', data);
       setResponse(data);
       // Reset feedback state for new query
       setFeedbackSubmitted(false);
@@ -84,14 +125,16 @@ function App() {
       setFeedbackCorrection('');
       setShowFeedbackForm(false);
     } catch (err) {
+      console.error('❌ Error occurred:', err);
       if (err.name === 'AbortError') {
-        setError('Request timeout. The server is taking too long to respond. This usually happens on the first request while loading AI models. Please try again.');
+        setError('Request timeout. The server is taking too long to respond. Please try again.');
       } else {
         setError(err.message || 'An error occurred while processing your request.');
       }
       console.error('Error:', err);
     } finally {
       setLoading(false);
+      console.log('🏁 Request completed');
     }
   };
 
@@ -192,7 +235,7 @@ function App() {
     matrix: ['[ ]', '| |', 'det', 'Tr', 'rank', 'vec', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
     stats: ['𝔼', 'Var', 'Cov', 'P(A)', 'μ', 'σ', 'Σ', '∑', 'Pr', 'f(x)', 'g(x)', 'X', 'Y', 'Z'],
     geometry: ['∠', '△', '∘', 'π', '⊥', '∥', '∪', '∩', '∅', 'radius', 'diameter', 'area', 'volume'],
-    latex: ['\frac{a}{b}', 'x^{n}', 'x_{i}', '\sqrt{x}', '\int f(x) dx', '\sum_{n=1}^{\infty}', '\lim_{x \to 0}', '\binom{n}{k}', '\log_{a}b', '\sin(x)', '\cos(x)', '\tan(x)']
+    latex: ['\\frac{a}{b}', 'x^{n}', 'x_{i}', '\\sqrt{x}', '\\int f(x) dx', '\\sum_{n=1}^{\\infty}', '\\lim_{x \\to 0}', '\\binom{n}{k}', '\\log_{a}b', '\\sin(x)', '\\cos(x)', '\\tan(x)']
   };
 
   const [showMathKeyboard, setShowMathKeyboard] = useState(false);
