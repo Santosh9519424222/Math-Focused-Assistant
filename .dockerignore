@@ -1,0 +1,13 @@
+# Exclude unnecessary files from Docker build context
+frontend/node_modules
+frontend/src
+frontend/public
+frontend/build
+*.log
+.git
+.gitignore
+firebase.json
+.firebaserc
+*.md
+scripts/
+

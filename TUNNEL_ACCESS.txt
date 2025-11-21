@@ -1,0 +1,134 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║           🌐 YOUR APP IS NOW LIVE VIA TUNNEL! 🌐                    ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+✅ Backend Server: RUNNING
+✅ Cloudflare Tunnel: ACTIVE
+✅ Public Access: ENABLED
+
+═══════════════════════════════════════════════════════════════════════
+
+🔗 ACCESS YOUR APP IN BROWSER:
+
+   https://techrepublic-cliff-merit-arrange.trycloudflare.com
+
+   👆 Click this link or copy-paste into your browser!
+
+═══════════════════════════════════════════════════════════════════════
+
+📊 SERVER STATUS:
+
+✅ Backend FastAPI Server
+   - Status: Running
+   - Port: 8080 (localhost)
+   - PID: 363197
+   - Response: {"message":"Welcome to the Agentic RAG Math Agent Backend!"}
+
+✅ Cloudflare Tunnel
+   - Status: Active
+   - PID: 595581
+   - Public URL: https://techrepublic-cliff-merit-arrange.trycloudflare.com
+   - Forwarding: localhost:8080 → Public Internet
+
+═══════════════════════════════════════════════════════════════════════
+
+🎯 HOW TO USE:
+
+1. **Open Frontend (Main UI):**
+   https://cricket-colleague-broadcasting-bob.trycloudflare.com
+
+   This is your React interface where you can:
+   - Ask math questions
+   - See step-by-step solutions
+   - Get AI-powered explanations
+
+2. **Backend API is on localhost:8000**
+   - The frontend needs to be configured to point to the backend
+   - Currently backend is running but not exposed via tunnel
+
+📝 Note: The frontend is currently served statically and may need
+backend API configuration to be fully functional.
+
+═══════════════════════════════════════════════════════════════════════
+
+💡 WHAT YOU CAN DO NOW:
+
+1. Open the URL in your browser
+2. Test the API endpoints
+3. Send math questions via /query
+4. View automatic API documentation at /docs
+5. Share the link with others (temporary, active while tunnel runs)
+
+═══════════════════════════════════════════════════════════════════════
+
+🔄 MANAGE THE TUNNEL:
+
+View tunnel status:
+  ps aux | grep cloudflared | grep -v grep
+
+View tunnel logs:
+  tail -f /home/santoshyadav_951942/Math-Focused-Assistant/tunnel.log
+
+Stop the tunnel:
+  kill 595581
+
+Restart the tunnel:
+  cloudflared tunnel --url http://localhost:8080
+
+═══════════════════════════════════════════════════════════════════════
+
+⚠️  IMPORTANT NOTES:
+
+1. This is a TEMPORARY tunnel URL
+   - Active only while cloudflared is running
+   - URL changes each time you restart the tunnel
+   - Not suitable for production (use for testing/demo)
+
+2. Backend server is already running
+   - Started on: Nov 19
+   - Will persist until you stop it or reboot
+
+3. For permanent deployment:
+   - Use the deploy-to-cloud.sh script
+   - Deploy to Google Cloud Run
+   - Get a stable production URL
+
+═══════════════════════════════════════════════════════════════════════
+
+🚀 NEXT STEPS:
+
+For Production Deployment:
+  1. Set your API key:
+     export PERPLEXITY_API_KEY='your-key'
+
+  2. Deploy to Cloud Run:
+     ./deploy-to-cloud.sh
+
+  3. Get permanent URL:
+     https://math-focused-assistant-xxxxx.run.app
+
+═══════════════════════════════════════════════════════════════════════
+
+📝 QUICK REFERENCE:
+
+Backend Server:
+  - Running on: localhost:8080
+  - Process ID: 363197
+  - Started: Nov 19, 2025
+
+Tunnel:
+  - Public URL: https://techrepublic-cliff-merit-arrange.trycloudflare.com
+  - Process ID: 595581
+  - Log file: tunnel.log
+
+═══════════════════════════════════════════════════════════════════════
+
+✨ YOUR APP IS LIVE AND ACCESSIBLE!
+
+Open your browser and visit:
+https://techrepublic-cliff-merit-arrange.trycloudflare.com
+
+Happy testing! 🎉
+

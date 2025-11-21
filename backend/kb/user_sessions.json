@@ -1,6 +1,14 @@
 {
   "127.0.0.1": {
-    "count": 4,
+    "count": 16,
     "logged_in": true
+  },
+  "testclient": {
+    "count": 1,
+    "logged_in": false
+  },
+  "2405:201:6010:a167:e446:d0e8:c7d4:561e": {
+    "count": 4,
+    "logged_in": false
   }
 }

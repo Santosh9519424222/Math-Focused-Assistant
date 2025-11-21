@@ -1,0 +1,137 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║         🚀 DEPLOYMENT TO FIREBASE + CLOUD RUN IN PROGRESS 🚀        ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+📅 Started: November 20, 2025
+👤 Account: santoshyadav.951942@gmail.com
+📦 Project: sacred-evening-477817-c1
+
+═══════════════════════════════════════════════════════════════════════
+
+✅ PHASE 1: AUTHENTICATION & SETUP - COMPLETE
+
+  ✓ gcloud authenticated
+  ✓ Project configured: sacred-evening-477817-c1
+  ✓ APIs enabled:
+    - Cloud Run API
+    - Cloud Build API
+    - Artifact Registry API
+
+═══════════════════════════════════════════════════════════════════════
+
+🔄 PHASE 2: BACKEND DEPLOYMENT (CLOUD RUN) - IN PROGRESS
+
+  Status: Building Docker container...
+
+  Service Name: math-focused-backend
+  Region: us-central1
+  Memory: 1Gi
+  CPU: 1
+  Timeout: 300s
+  Environment: PERPLEXITY_API_KEY=***
+
+  Steps:
+  ✓ Validating service
+  ✓ Uploading sources
+  ⏳ Building container (5-10 minutes)
+  ⏳ Deploying to Cloud Run
+  ⏳ Configuring routing
+
+  Progress: Check deploy_backend.log for real-time updates
+
+═══════════════════════════════════════════════════════════════════════
+
+⏸️  PHASE 3: FRONTEND DEPLOYMENT (FIREBASE) - PENDING
+
+  Will start after backend deployment completes
+
+  Waiting for backend URL to configure frontend...
+
+═══════════════════════════════════════════════════════════════════════
+
+📊 DEPLOYMENT TIMELINE:
+
+  00:00 - Authentication complete
+  00:01 - APIs enabled
+  00:02 - Backend deployment started
+  05:00 - Container build (estimated)
+  08:00 - Backend deployed (estimated)
+  10:00 - Frontend rebuild with backend URL (estimated)
+  12:00 - Frontend deployed to Firebase (estimated)
+  15:00 - COMPLETE (estimated)
+
+═══════════════════════════════════════════════════════════════════════
+
+🔍 MONITORING COMMANDS:
+
+  Watch deployment log:
+    tail -f /home/santoshyadav_951942/Math-Focused-Assistant/deploy_backend.log
+
+  Check deployment status:
+    gcloud run services list --region us-central1
+
+  View build logs:
+    gcloud builds list --limit 5
+
+═══════════════════════════════════════════════════════════════════════
+
+📝 WHAT HAPPENS NEXT:
+
+1. ⏳ Backend container building (current)
+   - Installing Python dependencies
+   - Copying backend code
+   - Setting up FastAPI
+
+2. ⏳ Backend deployment
+   - Pushing to Artifact Registry
+   - Creating Cloud Run service
+   - Configuring networking
+
+3. ✓ Get backend URL
+   - Format: https://math-focused-backend-xxxxx-uc.a.run.app
+   - Test /health endpoint
+
+4. ⏸️  Rebuild frontend
+   - npm install
+   - REACT_APP_API_URL=<backend-url> npm run build
+
+5. ⏸️  Deploy to Firebase
+   - firebase login
+   - firebase deploy --only hosting
+
+6. ✓ Verification
+   - Test frontend at Firebase URL
+   - Verify frontend→backend connection
+
+═══════════════════════════════════════════════════════════════════════
+
+⚠️  IMPORTANT NOTES:
+
+- Backend using PLACEHOLDER_KEY for PERPLEXITY_API_KEY
+  To update: gcloud run services update math-focused-backend \
+    --set-env-vars PERPLEXITY_API_KEY=your-real-key \
+    --region us-central1
+
+- First deployment takes longer (10-15 minutes)
+- Subsequent deploys are faster (3-5 minutes)
+
+═══════════════════════════════════════════════════════════════════════
+
+🎯 EXPECTED URLS:
+
+  Backend (Cloud Run):
+    https://math-focused-backend-[hash]-uc.a.run.app
+
+  Frontend (Firebase):
+    https://math-focused-assistant.web.app
+    https://math-focused-assistant.firebaseapp.com
+
+═══════════════════════════════════════════════════════════════════════
+
+Status: BACKEND DEPLOYMENT IN PROGRESS...
+Please wait 5-10 minutes for container build to complete.
+
+Updated: November 20, 2025 - 11:30 PM
+

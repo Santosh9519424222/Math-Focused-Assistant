@@ -1,0 +1,219 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║       📋 FIREBASE + CLOUD RUN DEPLOYMENT - STEP BY STEP 📋          ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+WHAT YOU'VE DONE SO FAR ✅
+
+1. ✅ Authenticated with gcloud
+   - Account: santoshyadav.951942@gmail.com
+   - Project: sacred-evening-477817-c1
+
+2. ✅ Enabled required Google Cloud APIs
+   - Cloud Run API
+   - Cloud Build API
+   - Artifact Registry API
+
+3. 🔄 Started Backend Deployment to Cloud Run
+   - Service: math-focused-backend
+   - Region: us-central1
+   - Status: Building container (IN PROGRESS)
+
+═══════════════════════════════════════════════════════════════════════
+
+WHAT'S HAPPENING NOW 🔄
+
+The backend deployment creates:
+1. Builds Docker container from your Dockerfile
+2. Uploads to Artifact Registry
+3. Deploys to Cloud Run service
+4. Configures networking and HTTPS
+
+This takes 5-10 minutes for first deployment.
+
+═══════════════════════════════════════════════════════════════════════
+
+MONITORING THE DEPLOYMENT 📊
+
+Check logs in real-time:
+  tail -f deploy_backend_full.log
+
+Check Cloud Build status:
+  gcloud builds list --limit 5
+
+Check Cloud Run services:
+  gcloud run services list --region us-central1
+
+═══════════════════════════════════════════════════════════════════════
+
+AFTER BACKEND DEPLOYS ⏭️
+
+You'll get output like:
+```
+Service [math-focused-backend] revision [math-focused-backend-00001-xxx] has been deployed and is serving 100% of traffic.
+Service URL: https://math-focused-backend-abc123-uc.a.run.app
+```
+
+THEN DO THESE STEPS:
+
+STEP 1: Save the backend URL
+  BACKEND_URL="https://math-focused-backend-abc123-uc.a.run.app"
+
+STEP 2: Test backend health
+  curl $BACKEND_URL/health
+
+STEP 3: Install Firebase CLI (if not installed)
+  npm install -g firebase-tools
+
+STEP 4: Login to Firebase
+  firebase login
+
+STEP 5: Initialize Firebase project (if first time)
+  firebase init hosting
+  - Select your project or create new: math-focused-assistant
+  - Public directory: frontend/build
+  - Single-page app: Yes
+  - Setup automatic builds: No
+
+STEP 6: Build frontend with backend URL
+  cd frontend
+  npm install
+  REACT_APP_API_URL="$BACKEND_URL" npm run build
+  cd ..
+
+STEP 7: Deploy to Firebase Hosting
+  firebase deploy --only hosting
+
+STEP 8: You'll get Firebase URL like:
+  https://math-focused-assistant.web.app
+
+═══════════════════════════════════════════════════════════════════════
+
+VERIFICATION CHECKLIST ✅
+
+After both deployments complete:
+
+□ Backend health check passes
+  curl https://math-focused-backend-xxx.run.app/health
+
+□ Backend API docs accessible
+  https://math-focused-backend-xxx.run.app/docs
+
+□ Frontend loads from Firebase
+  https://math-focused-assistant.web.app
+
+□ Frontend calls backend
+  - Open browser DevTools → Network tab
+  - Make a query in the UI
+  - Should see requests to Cloud Run URL
+
+□ End-to-end test
+  - Ask a math question in the UI
+  - Get a response
+
+═══════════════════════════════════════════════════════════════════════
+
+TROUBLESHOOTING 🔧
+
+Issue: Cloud Build fails with "disk full"
+Fix: The VM has limited space. Build on Cloud Build instead (which we're doing)
+
+Issue: Permission denied
+Fix: gcloud auth login && gcloud config set project sacred-evening-477817-c1
+
+Issue: Firebase deploy fails
+Fix: firebase login --reauth
+
+Issue: Frontend still calls localhost:8000
+Fix: Rebuild with REACT_APP_API_URL set correctly
+
+Issue: CORS errors in browser
+Fix: Backend CORS is set to allow all (*). Check if backend URL is correct.
+
+═══════════════════════════════════════════════════════════════════════
+
+UPDATING PERPLEXITY API KEY 🔑
+
+Your backend currently uses PLACEHOLDER_KEY. To update:
+
+  gcloud run services update math-focused-backend \
+    --set-env-vars PERPLEXITY_API_KEY=pplx-your-real-key \
+    --region us-central1 \
+    --project sacred-evening-477817-c1
+
+This updates the environment variable without redeploying.
+
+═══════════════════════════════════════════════════════════════════════
+
+REDEPLOYMENT (FOR UPDATES) 🔄
+
+Backend (after code changes):
+  gcloud run deploy math-focused-backend \
+    --source . \
+    --region us-central1 \
+    --project sacred-evening-477817-c1 \
+    --allow-unauthenticated
+
+Frontend (after UI changes):
+  cd frontend
+  REACT_APP_API_URL="$BACKEND_URL" npm run build
+  cd ..
+  firebase deploy --only hosting
+
+═══════════════════════════════════════════════════════════════════════
+
+COSTS 💰
+
+Cloud Run (Backend):
+  - 1st 2M requests/month: FREE
+  - After that: ~$0.40 per million requests
+  - Your config (1Gi RAM, 1 CPU): ~$0.00002400/second while running
+
+Firebase Hosting (Frontend):
+  - 10GB storage: FREE
+  - 360MB/day transfer: FREE
+  - Additional: $0.026/GB
+
+Estimated monthly cost (light usage): $0-5
+
+═══════════════════════════════════════════════════════════════════════
+
+PRODUCTION IMPROVEMENTS 🚀
+
+1. Add custom domain
+   - Firebase: firebase hosting:channel:deploy prod --domain yourdomain.com
+   - Cloud Run: Map via Cloud DNS
+
+2. Enable HTTPS/SSL (automatic with both)
+
+3. Add monitoring
+   - Cloud Run: Cloud Logging + Error Reporting
+   - Firebase: Firebase Analytics
+
+4. CI/CD with GitHub Actions
+   - Auto-deploy on push to main branch
+   - Separate staging/production
+
+5. Secrets Management
+   - Use Google Secret Manager for API keys
+   - Reference in Cloud Run: --set-secrets
+
+═══════════════════════════════════════════════════════════════════════
+
+CURRENT STATUS: ⏳ WAITING FOR BACKEND BUILD TO COMPLETE
+
+Monitor with:
+  tail -f deploy_backend_full.log
+
+Expected completion: 5-10 minutes from start
+Started: ~11:40 PM
+Estimated complete: ~11:50 PM
+
+═══════════════════════════════════════════════════════════════════════
+
+NEXT: Once you see "Service URL: https://..." in the log, copy that URL
+      and proceed with frontend deployment steps above.
+
+Updated: November 20, 2025, 11:45 PM
+

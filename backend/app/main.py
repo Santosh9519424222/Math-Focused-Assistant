@@ -1,6 +1,5 @@
-
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -53,6 +52,19 @@ app.add_middleware(
 # Serve static files from backend directory
 static_dir = os.path.join(os.path.dirname(__file__), "..")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+# Health endpoint for Cloud Run / Docker health checks
+@app.get("/health")
+def health():
+    return {"status": "ok", "service": "math-backend", "version": app.version}
+
+# Serve frontend static files (React build)
+frontend_build_dir = os.path.join(os.path.dirname(__file__), "../../frontend/build")
+if os.path.exists(frontend_build_dir):
+    app.mount("/app", StaticFiles(directory=frontend_build_dir), name="frontend")
+    logger.info(f"Frontend build directory mounted at /app from {frontend_build_dir}")
+else:
+    logger.warning(f"Frontend build directory not found at {frontend_build_dir}")
 
 # Admin endpoint to view user session data
 @app.get("/admin/sessions")
@@ -662,3 +674,28 @@ async def get_problem_status():
         logger.error(f"Error getting problem status: {e}")
         raise HTTPException(status_code=500, detail="Failed to get problem status")
 
+
+# Catch-all route to serve React frontend for any unmatched route
+@app.get("/{full_path:path}")
+async def serve_frontend(full_path: str):
+    """Serve React frontend for any path not matched by API routes"""
+    frontend_index = os.path.join(os.path.dirname(__file__), "../../frontend/build/index.html")
+
+    # If requesting a specific file that exists, serve it
+    if full_path and not full_path.startswith("api"):
+        requested_file = os.path.join(os.path.dirname(__file__), "../../frontend/build", full_path)
+        if os.path.isfile(requested_file):
+            return FileResponse(requested_file)
+
+    # Otherwise serve index.html for React Router
+    if os.path.exists(frontend_index):
+        return FileResponse(frontend_index)
+    else:
+        return JSONResponse(
+            content={
+                "message": "Frontend not built. Run 'npm run build' in the frontend directory.",
+                "api_status": "Backend is running",
+                "api_docs": "/docs"
+            },
+            status_code=200
+        )
