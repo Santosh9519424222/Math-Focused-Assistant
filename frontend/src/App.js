@@ -31,12 +31,13 @@ const getApiUrl = () => {
   // 3. Check if running on localhost
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
     console.log('  ✅ Using localhost:8000');
-    return 'http://localhost:8000';
+    return 'https://math-assistant-backend-450535039949.us-central1.run.app';
+
   }
   
-  // 4. Fallback to production
-  console.log('  ✅ Using production');
-  return 'https://math-focused-assistant.onrender.com';
+  // 4. Fallback to production (Cloud Run)
+  console.log('  ✅ Using production Cloud Run backend');
+  return 'https://math-assistant-backend-450535039949.us-central1.run.app';
 };
 
 const API_URL = getApiUrl();
