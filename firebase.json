@@ -1,10 +1,16 @@
 {
-}
-  }
-    ]
-      {"source": "**", "destination": "/index.html"}
-    "rewrites": [
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "public": "frontend/build",
   "hosting": {
-
+    "public": "frontend/build",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
